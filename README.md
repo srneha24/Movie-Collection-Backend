@@ -1,3 +1,5 @@
-# MOVIE SEARCH
+# MOVIE COLLECTION BACKEND
 
-An application to show basic usage of Elasticsearch and Meilisearch
+The backend for my movie collection app. Just a fun way of learning Elasticsearch and Meilisearch.
+
+[Frontend](https://github.com/srneha24/Movie-Collection-Frontend)
