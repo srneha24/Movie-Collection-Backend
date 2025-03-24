@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Path, Depends, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from uuid import UUID
@@ -6,6 +7,7 @@ from uuid import UUID
 from schemas import Movie, MovieUpdate, Filters, MovieResponse, APIResponse, APIResponsePaginated
 from utils.search_clients import create_index, close_connections, insert, update, get, get_all, delete, list_directors
 from utils.pagination import Pagination
+from app_vars import FRONTEND_URL
 
 
 @asynccontextmanager
@@ -16,6 +18,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/movie")
