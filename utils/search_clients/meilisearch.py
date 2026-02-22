@@ -95,9 +95,9 @@ class MeilisearchClient(SearchClient):
             end_time = datetime.fromisoformat(f"{filters.release_year}-12-31 23:59:59").timestamp() * 1000
             conditions.append(f'(release_date >= {start_time} AND release_date <= {end_time})')
 
-        if not conditions:
-            conditional_args["opt_params"]["sort"] = ["created_at:desc"]
-        else:
+        conditional_args["opt_params"]["sort"] = ["title:asc"]
+
+        if conditions:
             conditional_args["opt_params"]["filter"] = " AND ".join(conditions)
         
         results = self.index.search(**conditional_args)

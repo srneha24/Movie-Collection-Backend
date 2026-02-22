@@ -10,3 +10,7 @@ env
 # CACHE
 __pycache__
 .pytest_cache
+
+# CLAUDE
+CLAUDE.md
+.claude/*

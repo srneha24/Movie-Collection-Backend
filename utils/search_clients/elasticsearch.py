@@ -96,20 +96,19 @@ class ElasticsearchClient(SearchClient):
         }
 
         if filters.search:
-            conditions["should"] = [
-                {
-                    "multi_match": {
-                        "query": filters.search,
-                        "fields": [
-                            "title^3",
-                            "synopsis^2",
-                            "review",
-                            "director"
-                        ]
-                    }
+            must.append({
+                "query_string": {
+                    "query": f"*{filters.search}*",
+                    "fields": [
+                        "title^3",
+                        "synopsis^2",
+                        "review",
+                        "director"
+                    ],
+                    "default_operator": "AND"
                 }
-            ]
-        
+            })
+
         if filters.rating:
             must.append({
                 "range": {
@@ -119,7 +118,7 @@ class ElasticsearchClient(SearchClient):
                     }
                 }
             })
-        
+
         if filters.release_year:
             must.append({
                 "range": {
@@ -130,17 +129,21 @@ class ElasticsearchClient(SearchClient):
                     }
                 }
             })
-        
+
         if filters.director:
             must.append({
                 "term": {
-                    "director": filters.director
+                    "director.keyword": filters.director
                 }
             })
-        
+
         if must:
             conditions["must"] = must
         
+        conditional_args["sort"] = [
+            {"title.keyword": {"order": "asc"}}
+        ]
+
         if conditions:
             conditional_args.update({
                 "query": {
@@ -151,14 +154,7 @@ class ElasticsearchClient(SearchClient):
             conditional_args.update({
                 "query": {
                     "match_all": {}
-                },
-                "sort": [
-                    {
-                        "created_at": {
-                            "order": "desc"
-                        }
-                    }
-                ]
+                }
             })
         
         results = await self.client.search(index=INDEX_NAME, **conditional_args)
